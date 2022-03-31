@@ -4,6 +4,8 @@ import matplotlib.pyplot
 import multiprocessing as mp
 import pickle
 
+from Tesseroid import Tesseroid
+
 
 def cal_delta_x(phi_cal, lambda_cal, r_tess, phi_tess, lambda_tess):
     """
@@ -889,72 +891,6 @@ def cal_single_tess_gravitational_field(r_cal, phi_cal, lambda_cal,
     return gf
 
 
-def for_parallel(r_cal, phi_cal, lambda_cal, 
-    r_min, r_max, phi_min, phi_max, lambda_min, lambda_max, 
-    density, density_gradient, max_node, tag, ratio, 
-    index_latitude, index_longitude, delta_lambda, is_linear_density):
-    """
-    Calculate the gravitational field of all tesseroid in the same latitude.
-    
-    Parameters
-    ----------
-    r_cal: float
-        Radius of computation point in meter.
-    phi_cal: numpy.ndarray, float
-        Latitude of computation point in radian.
-    lambda_cal: numpy.ndarray, float
-        Longitude of computation point in radian.
-    r_min: float
-        Radius of tesseroid in meter.
-    r_max: float
-        Radius of tesseroid in meter.
-    phi_min: float
-        Latitude of tesseroid in radian.
-    phi_max: float
-        Latitude of tesseroid in radian.
-    lambda_min: float
-        Longitude of tesseroid in radian.
-    lambda_max: float
-        Longitude of tesseroid in radian.
-    density: float
-        Density of tesseroid in kg/m^3.
-    density_gradient: float
-        Density gradient of tesseroid in kg/m^3/m.
-    max_node: int
-        Max node in $r$ direction, $\phi$ direction, 
-        and $\lambda$ direction.
-    tag: string
-        Kernel function to be calculated. 
-        tag \in {'V', 'Vx', 'Vy', 'Vz', 
-        'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
-    ratio: int
-        Distance-size ratio, which is specified by the user. 
-        The larger ratio is, the smaller tesseroid is divided, 
-        and the higher accuracy of calculation is.
-    is_linear_density: bool
-        If the tesseroid have linear varying density.
-
-    Returns
-    -------
-    result: numpy.ndarray
-        Gravitational field of tesseroid at all calculation points.
-    """
-
-    lambda_min_temp = lambda_min + delta_lambda * index_longitude
-    lambda_max_temp = lambda_min_temp + delta_lambda
-
-    gf = cal_single_tess_gravitational_field(\
-        r_cal, phi_cal, lambda_cal, \
-        r_min[index_latitude, index_longitude], \
-        r_max[index_latitude, index_longitude], \
-        phi_min, phi_max, \
-        lambda_min_temp, lambda_max_temp, \
-        density[index_latitude, index_longitude], 
-        density_gradient[index_latitude, index_longitude], 
-        max_node, tag, ratio, is_linear_density)
-    return gf
-
-
 def cal_gravitational_field(r_cal, phi_cal, lambda_cal, 
     r_min, r_max, phi_min, phi_max, lambda_min, lambda_max, 
     density, density_gradient, max_node, ratio, tag, 
@@ -1008,50 +944,45 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal,
         Gravitational field of large-scale tesseroid.
     """
     apparent_density = density - density_gradient * r_min
-    if is_parallel_computing:
-        delta_phi = (phi_max - phi_min) / len(phi_cal)
-        delta_lambda = (lambda_max - lambda_min) / len(lambda_cal)
+    tesseroids = []
+    [phi_num, lambda_num] = r_min.shape
+    delta_phi = (phi_max - phi_min) / phi_num
+    delta_lambda = (lambda_max - lambda_min) / lambda_num
 
-        gf = np.zeros((len(phi_cal), len(lambda_cal)))
-        for index_latitude in range(len(phi_cal)):
-            phi_min_temp = phi_min + delta_phi * index_latitude
-            phi_max_temp = phi_min_temp + delta_phi
+    gf = np.zeros((len(phi_cal), len(lambda_cal)))
+    for idx_latitude in range(phi_num):
+        phi_min_temp = phi_min + delta_phi * idx_latitude
+        phi_max_temp = phi_min_temp + delta_phi
+        for idx_longitude in range(lambda_num):
+            lambda_min_temp = lambda_min + delta_lambda * idx_longitude
+            lambda_max_temp = lambda_min_temp + delta_lambda
 
-            pool = mp.Pool(mp.cpu_count())
-            results = pool.starmap(for_parallel, \
-                [(r_cal, phi_cal, lambda_cal, 
-                r_min, r_max, phi_min_temp, phi_max_temp, 
-                lambda_min, lambda_max, 
-                apparent_density, density_gradient, 
-                max_node, tag, ratio, 
-                index_latitude, index_longitude, delta_lambda,
-                is_linear_density) 
-                for index_longitude in range(len(lambda_cal))])
-            pool.close()
-
-            for index in results:
-                gf = gf + index
-
-        return gf
-    else:
-        delta_phi = (phi_max - phi_min) / len(phi_cal)
-        delta_lambda = (lambda_max - lambda_min) / len(lambda_cal)
-
-        gf = np.zeros((len(phi_cal), len(lambda_cal)))
-        for index_latitude in range(len(phi_cal)):
-            phi_min_temp = phi_min + delta_phi * index_latitude
-            phi_max_temp = phi_min_temp + delta_phi
-            for index_longitude in range(len(lambda_cal)):
-                lambda_min_temp = lambda_min + delta_lambda * index_longitude
-                lambda_max_temp = lambda_min_temp + delta_lambda
-
-                gf += cal_single_tess_gravitational_field(\
-                    r_cal, phi_cal, lambda_cal, \
-                    r_min[index_latitude, index_longitude], \
-                    r_max[index_latitude, index_longitude], \
+            tesseroids.append(Tesseroid(r_min[idx_latitude, idx_longitude], \
+                    r_max[idx_latitude, idx_longitude], \
                     phi_min_temp, phi_max_temp, \
                     lambda_min_temp, lambda_max_temp, \
-                    apparent_density[index_latitude, index_longitude], 
-                    density_gradient[index_latitude, index_longitude], 
-                    max_node, tag, ratio, is_linear_density)
-        return gf
+                    apparent_density[idx_latitude, idx_longitude], 
+                    density_gradient[idx_latitude, idx_longitude]))
+    
+    if is_parallel_computing:
+        pool = mp.Pool(mp.cpu_count())
+        results = pool.starmap(cal_single_tess_gravitational_field, \
+            [(r_cal, phi_cal, lambda_cal, 
+            tess.r_min, tess.r_max, tess.phi_min, tess.phi_max, \
+            tess.lambda_min, tess.lambda_max, \
+            tess.apparent_density, tess.density_gradient, \
+            max_node, tag, ratio, is_linear_density) 
+            for tess in tesseroids])
+        pool.close()
+        for res in results:
+            gf += res
+    else:
+        for tess in tesseroids:
+            gf += cal_single_tess_gravitational_field(\
+                r_cal, phi_cal, lambda_cal, \
+                tess.r_min, tess.r_max, tess.phi_min, tess.phi_max, \
+                tess.lambda_min, tess.lambda_max, \
+                tess.apparent_density, tess.density_gradient, \
+                max_node, tag, ratio, is_linear_density)
+    return gf
+    
