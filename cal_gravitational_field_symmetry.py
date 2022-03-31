@@ -1,5 +1,5 @@
 import numpy as np
-# import sympy as sy
+import sympy as sy
 # from math import sin, cos, sqrt
 import math
 import multiprocessing as mp
@@ -1613,20 +1613,22 @@ def subdivision(r_cal, phi_cal, lambda_cal, \
         result_constant = 0
         result_linear = 0
 
-        delta_phi = subdivision_phi_direction(r_max, distance, ratio)
-        phi_num = math.ceil((phi_max - phi_min) / delta_phi)
+        # delta_phi = subdivision_phi_direction(r_max, distance, ratio)
+        # phi_num = math.ceil((phi_max - phi_min) / delta_phi)
+        phi_num = 2
         delta_phi = (phi_max - phi_min) / phi_num
 
         for phi_index in range(phi_num):
             phi_min_temp = phi_min + phi_index * delta_phi
             phi_max_temp = phi_min_temp + delta_phi
 
-            phi0 = (phi_max_temp + phi_min_temp) / 2
-            lambda0 = (lambda_max + lambda_min) / 2
-            distance = cal_distance(r_cal, phi_cal, lambda_cal, r_max, phi0, lambda0)
+            # phi0 = (phi_max_temp + phi_min_temp) / 2
+            # lambda0 = (lambda_max + lambda_min) / 2
+            # distance = cal_distance(r_cal, phi_cal, lambda_cal, r_max, phi0, lambda0)
             
-            delta_lambda = subdivision_lambda_direction(r_max, phi_min_temp, distance, ratio)
-            lambda_num = math.ceil((lambda_max - lambda_min) / delta_lambda)
+            # delta_lambda = subdivision_lambda_direction(r_max, phi_min_temp, distance, ratio)
+            # lambda_num = math.ceil((lambda_max - lambda_min) / delta_lambda)
+            lambda_num = 2
             delta_lambda = (lambda_max - lambda_min) / lambda_num
             for lambda_index in range(lambda_num):
                 lambda_min_temp = lambda_min + delta_lambda * lambda_index
