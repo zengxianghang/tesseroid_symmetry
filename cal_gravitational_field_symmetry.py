@@ -1,13 +1,7 @@
 import numpy as np
 import sympy as sy
-# from math import sin, cos, sqrt
-import math
 import multiprocessing as mp
-import time
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import scipy.io
-import pickle
+import math
 
 
 def cal_distance(r1, phi1, lambda1, r2, phi2, lambda2):
@@ -57,18 +51,16 @@ def cal_V_kernel(r_cal, phi_cal, lambda_cal,
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
-        If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        If the tesseroid have linearly varying density.
+        
     Returns
     -------
     kernel: float
@@ -189,18 +181,16 @@ def cal_Vx_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -309,18 +299,16 @@ def cal_Vy_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -424,18 +412,16 @@ def cal_Vz_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -566,18 +552,16 @@ def cal_Vxx_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -701,18 +685,16 @@ def cal_Vxy_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -829,18 +811,16 @@ def cal_Vxz_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -953,18 +933,16 @@ def cal_Vyy_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -1091,18 +1069,16 @@ def cal_Vyz_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -1219,18 +1195,16 @@ def cal_Vzz_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -1450,11 +1424,11 @@ def cal_kernel(r_cal, phi_cal, lambda_cal, \
     lambda_cal: float
         Longitude of compuattion point in radian.
     r_tess: float
-        Radius of tesseroid in meter.
+        Radius of integration point in meter.
     phi_tess: float
-        Latitude of tesseroid in radian.
+        Latitude of integration point in radian.
     lambda_tess: float
-        Longitude of tesseroid in radian.
+        Longitude of integration point in radian.
     order: int
         Differentiation of kernel function.
     tag: string
@@ -1463,9 +1437,7 @@ def cal_kernel(r_cal, phi_cal, lambda_cal, \
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     kernel: float
@@ -1504,61 +1476,9 @@ def cal_kernel(r_cal, phi_cal, lambda_cal, \
     return kernel
 
 
-def subdivision_phi_direction(r_max, distance, ratio):
-    """
-    Calculate the interval in latitude direction.
-
-    Parameters
-    ----------
-    r_max: float
-        Max radius of tesseroid in meter.
-    distance: float
-        Distance between tesseroid and computation point in meter.    
-    ratio: int
-        Distance-size ratio, which is specified by the user. 
-        The larger ratio is, the smaller tesseroid is divided, 
-        and the higher accuracy of calculation is.
-    
-    Returns
-    -------
-    delta_phi: float
-        The interval in latitude direction.
-    """
-    delta_phi = distance / ratio / r_max
-
-    return delta_phi
-
-
-def subdivision_lambda_direction(r_max, phi_min, distance, ratio):
-    """
-    Calculate the interval in longitude direction.
-
-    Parameters
-    ----------
-    r_max: float
-        Max radius of tesseroid in meter.
-    phi_min: float
-        Min latitude of tesseroid in radian.
-    distance: float
-        Distance between tesseroid and computation point in meter.    
-    ratio: int
-        Distance-size ratio, which is specified by the user. 
-        The larger ratio is, the smaller tesseroid is divided, 
-        and the higher accuracy of calculation is.
-
-    Returns
-    -------
-    delta_lambda: float
-        The interval in longitude direction.
-    """
-    delta_lambda = distance / ratio / r_max / math.cos(phi_min)
-
-    return delta_lambda
-
-
 def subdivision(r_cal, phi_cal, lambda_cal, \
         r0, r_max, phi_min, phi_max, lambda_min, lambda_max, \
-        distance, ratio, order, roots, weights, \
+        ratio, order, roots, weights, \
         tag, is_linear_density):
     """
     Subdivide the tesseroid.
@@ -1576,16 +1496,14 @@ def subdivision(r_cal, phi_cal, lambda_cal, \
     r_max: float
         Radius of tesseroid in meter.
     phi_min: float
-        Latitude of tesseroid in radian.
+        Min latitude of tesseroid in radian.
     phi_max: float
-        Latitude of tesseroid in radian.
+        Max latitude of tesseroid in radian.
     lambda_min: float
-        Longitude of tesseroid in radian.
+        Max longitude of tesseroid in radian.
     lambda_max: float
-        Longitude of tesseroid in radian.
-    distance: float
-        Distance between tesseroid and computation point in meter.    
-    ratio: int
+        Max longitude of tesseroid in radian.
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -1601,20 +1519,16 @@ def subdivision(r_cal, phi_cal, lambda_cal, \
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     result: float
-        The gravitational field generated by tesseroid after subdivide.
+        The gravitational field generated by tesseroid after subdivision.
     """
     if is_linear_density:
         result_constant = 0
         result_linear = 0
 
-        # delta_phi = subdivision_phi_direction(r_max, distance, ratio)
-        # phi_num = math.ceil((phi_max - phi_min) / delta_phi)
         phi_num = 2
         delta_phi = (phi_max - phi_min) / phi_num
 
@@ -1622,19 +1536,14 @@ def subdivision(r_cal, phi_cal, lambda_cal, \
             phi_min_temp = phi_min + phi_index * delta_phi
             phi_max_temp = phi_min_temp + delta_phi
 
-            # phi0 = (phi_max_temp + phi_min_temp) / 2
-            # lambda0 = (lambda_max + lambda_min) / 2
-            # distance = cal_distance(r_cal, phi_cal, lambda_cal, r_max, phi0, lambda0)
-            
-            # delta_lambda = subdivision_lambda_direction(r_max, phi_min_temp, distance, ratio)
-            # lambda_num = math.ceil((lambda_max - lambda_min) / delta_lambda)
             lambda_num = 2
             delta_lambda = (lambda_max - lambda_min) / lambda_num
             for lambda_index in range(lambda_num):
                 lambda_min_temp = lambda_min + delta_lambda * lambda_index
                 lambda_max_temp = lambda_min_temp + delta_lambda
 
-                constant_temp, linear_temp = cal_single_tesseroid_gravitational_field(r_cal, phi_cal, lambda_cal, 
+                constant_temp, linear_temp = cal_single_tesseroid_gravitational_field(
+                    r_cal, phi_cal, lambda_cal, 
                     r0, r_max, phi_min_temp, phi_max_temp, 
                     lambda_min_temp, lambda_max_temp, 
                     roots, weights, order, tag, ratio, is_linear_density)
@@ -1645,26 +1554,22 @@ def subdivision(r_cal, phi_cal, lambda_cal, \
         return result_constant, result_linear
     else:
         result = 0
-        delta_phi = subdivision_phi_direction(r_max, distance, ratio)
-        phi_num = math.ceil((phi_max - phi_min) / delta_phi)
+
+        phi_num = 2
         delta_phi = (phi_max - phi_min) / phi_num
 
         for phi_index in range(phi_num):
             phi_min_temp = phi_min + phi_index * delta_phi
             phi_max_temp = phi_min_temp + delta_phi
 
-            phi0 = (phi_max_temp + phi_min_temp) / 2
-            lambda0 = (lambda_max + lambda_min) / 2
-            distance = cal_distance(r_cal, phi_cal, lambda_cal, r_max, phi0, lambda0)
-            
-            delta_lambda = subdivision_lambda_direction(r_max, phi_min_temp, distance, ratio)
-            lambda_num = math.ceil((lambda_max - lambda_min) / delta_lambda)
+            lambda_num = 2
             delta_lambda = (lambda_max - lambda_min) / lambda_num
             for lambda_index in range(lambda_num):
                 lambda_min_temp = lambda_min + delta_lambda * lambda_index
                 lambda_max_temp = lambda_min_temp + delta_lambda
 
-                temp = cal_single_tesseroid_gravitational_field(r_cal, phi_cal, lambda_cal, 
+                temp = cal_single_tesseroid_gravitational_field(
+                    r_cal, phi_cal, lambda_cal, 
                     r0, r_max, phi_min_temp, phi_max_temp, 
                     lambda_min_temp, lambda_max_temp, 
                     roots, weights, order, tag, ratio, is_linear_density)
@@ -1689,13 +1594,13 @@ def direct_cal_gravitational_field(r_cal, phi_cal, lambda_cal,
     r0: float
         Expansion point of Taylor series in meter.
     phi_min: float
-        Latitude of tesseroid in radian.
+        Min latitude of tesseroid in radian.
     phi_max: float
-        Latitude of tesseroid in radian.
+        Max latitude of tesseroid in radian.
     lambda_min: float
-        Longitude of tesseroid in radian.
+        Min longitude of tesseroid in radian.
     lambda_max: float
-        Longitude of tesseroid in radian.
+        Max longitude of tesseroid in radian.
     roots: numpy.ndarray, float
         Roots of legendre polynomial.
     weights: numpy.ndarray, float
@@ -1708,9 +1613,7 @@ def direct_cal_gravitational_field(r_cal, phi_cal, lambda_cal,
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     result: float
@@ -1761,7 +1664,7 @@ def cal_single_tesseroid_gravitational_field(
         roots, weights, order, tag, ratio, 
         is_linear_density):
     """
-    Calculate the gravitational field of a single tesseroid at all computation points.
+    Calculate the gravitational field of a tesseroid.
 
     Parameters
     ----------
@@ -1776,13 +1679,13 @@ def cal_single_tesseroid_gravitational_field(
     r_max: float
         Radius of tesseroid in meter.
     phi_min: float
-        Latitude of tesseroid in radian.
+        Min latitude of tesseroid in radian.
     phi_max: float
-        Latitude of tesseroid in radian.
+        Max latitude of tesseroid in radian.
     lambda_min: float
-        Longitude of tesseroid in radian.
+        Min longitude of tesseroid in radian.
     lambda_max: float
-        Longitude of tesseroid in radian.
+        Max longitude of tesseroid in radian.
     roots: numpy.ndarray, float
         Roots of legendre polynomial.
     weights: numpy.ndarray, float
@@ -1793,19 +1696,17 @@ def cal_single_tesseroid_gravitational_field(
         Kernel function to be calculated. 
         tag \in {'V', 'Vx', 'Vy', 'Vz', 
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
-    ratio: int
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     result: numpy.ndarray, float
-        the gravitational field of a single tesseroid at all computation points.
+        The gravitational field of a tesseroid.
     """
         
     phi0 = (phi_max + phi_min) / 2
@@ -1822,7 +1723,7 @@ def cal_single_tesseroid_gravitational_field(
         else:
             result_constant, result_linear = subdivision(r_cal, phi_cal, lambda_cal, 
                 r0, r_max, phi_min, phi_max, lambda_min, lambda_max,
-                ell0, ratio, order, roots, weights, tag, is_linear_density)
+                ratio, order, roots, weights, tag, is_linear_density)
         return result_constant, result_linear
     else:
         if (ell0/L_phi>ratio) and (ell0/L_lambda>ratio):
@@ -1832,7 +1733,7 @@ def cal_single_tesseroid_gravitational_field(
         else:
             result = subdivision(r_cal, phi_cal, lambda_cal, 
                 r0, r_max, phi_min, phi_max, lambda_min, lambda_max,
-                ell0, ratio, order, roots, weights, tag, is_linear_density)
+                ratio, order, roots, weights, tag, is_linear_density)
         return result
 
 
@@ -1871,7 +1772,7 @@ def cal_order(r_cal, phi_cal, lambda_cal,
         Weights of quadrature.
     order: int
         Differentiation of kernel function.
-    ratio: int
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -1881,9 +1782,7 @@ def cal_order(r_cal, phi_cal, lambda_cal,
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
     is_linear_density: bool
         If the tesseroid have linear varying density. 
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-
+        
     Returns
     -------
     data: numpy.ndarray, float
@@ -2107,7 +2006,7 @@ def cal_taylor_term(r_cal, phi_cal, lambda_cal, \
         Weights of quadrature.
     order: int
         Differentiation of kernel function.
-    ratio: int
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -2130,10 +2029,6 @@ def cal_taylor_term(r_cal, phi_cal, lambda_cal, \
 
     index_source = index_parts[0]
     rt = np.mean(r0[index_parts])
-
-    # be careful !!!
-    # rt = np.mean(r0) # delete
-
 
     lambda_min_temp = lambda_min + (lambda_max - lambda_min) * index_parts[0]
     lambda_max_temp = lambda_min_temp + (lambda_max - lambda_min)
@@ -2187,40 +2082,9 @@ def divide(r, parts_num):
         return index
 
 
-def divide2(r, parts_num):
-    """
-    Divide r into several equally spaced parts.
-    
-    Parameters
-    ----------
-    r: numpy.ndarray, float
-        The radius need divide.
-    parts_num: int
-        Number of parts.
-
-    Returns
-    -------
-    numpy.ndarray, float
-        Index after division.
-    """
-    index = np.zeros((len(r), 1))
-    if parts_num==1:
-        return np.zeros((len(r)))
-    else:
-        delta_r = (np.max(r) - np.min(r)) / parts_num
-        for index_r in range(len(r)):
-            if r[index_r]==np.min(r):
-                index[index_r] = 0
-            else:
-                index[index_r] = np.ceil((r[index_r] - np.min(r)) / delta_r)-1
-        return index
-
-
 def cal_single_part(r_cal, phi_cal, lambda_cal, \
-    r_min, r_max, r0, phi_min, phi_max, 
-    lambda_min, lambda_max, \
-    density, density_gradient, 
-    shape, roots, weights, \
+    r_min, r_max, r0, phi_min, phi_max, lambda_min, lambda_max, \
+    density, density_gradient, shape, roots, weights, \
     max_order, ratio, tag, index_parts, \
     is_linear_density):
     """
@@ -2260,7 +2124,7 @@ def cal_single_part(r_cal, phi_cal, lambda_cal, \
         Weights of quadrature.
     max_order: int
         Truncation order of Taylor series.
-    ratio: int
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -2296,7 +2160,7 @@ def cal_gravitational_field_kernel(r_cal, phi_cal, lambda_cal, \
         lambda_min, lambda_max, \
         density, density_gradient, 
         shape, roots, weights, \
-        max_order, ratio, tag, parts_num, \
+        max_order, ratio, tag, parts_num, r_std_lim, \
         is_linear_density):
     """
     Calculate part of gravitational field. 
@@ -2338,7 +2202,7 @@ def cal_gravitational_field_kernel(r_cal, phi_cal, lambda_cal, \
     max_node: int
         Max node in $r$ direction, $\phi$ direction, 
         and $\lambda$ direction.
-    ratio: int
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -2348,6 +2212,10 @@ def cal_gravitational_field_kernel(r_cal, phi_cal, lambda_cal, \
         'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
     parts_num: int
         Evenly divide r0 into parts_num parts.
+    r_std_lim: float
+        Limition of std(radius). 
+        If std(r0) > r_std_lim, the latitude band will be divide into parts_num parts.
+        If parts_num = 1, r_std_lim can be set to any value.
     is_linear_density: bool
         If the tesseroid have linear varying density. 
         is_linear_density = true: tesseroid have linear varying density.
@@ -2361,7 +2229,7 @@ def cal_gravitational_field_kernel(r_cal, phi_cal, lambda_cal, \
     result = np.zeros(shape)
     std_r0 = np.std(r0)
 
-    if std_r0>2000:
+    if std_r0>r_std_lim:
         index_parts = divide(r0, parts_num)
 
         temp_index = np.arange(shape[1])
@@ -2387,12 +2255,10 @@ def cal_gravitational_field_kernel(r_cal, phi_cal, lambda_cal, \
 
 def cal_latitude_band_gravitational_field(
         r_cal, phi_cal, lambda_cal, 
-        r_min, r_max, phi_min, phi_max, 
-        lambda_min, lambda_max, 
-        density, density_gradient, 
-        shape, roots, weights, 
+        r_min, r_max, phi_min, phi_max, lambda_min, lambda_max, 
+        density, density_gradient, shape, roots, weights, 
         max_order_r_max, max_order_r_min, ratio, tag, 
-        parts_num_r_max, parts_num_r_min, 
+        parts_num_r_max, parts_num_r_min, r_max_std_lim, r_min_std_lim,
         is_linear_density):
     """
     Calculate the gravitational field 
@@ -2421,7 +2287,7 @@ def cal_latitude_band_gravitational_field(
     density: numpy.ndarray, float
         Density of tesseroid in kg/m^3.
     density_gradient: numpy.ndarray, float
-        Density gradient of tesseroid in kg/m^3.
+        Density gradient of tesseroid in kg/m^3/m.
     shape: tuple
         Number of rows and columns of computation points.
     roots: numpy.ndarray, float
@@ -2434,8 +2300,10 @@ def cal_latitude_band_gravitational_field(
         Truncation order of Taylor series of F(r_2, \varphi', \lambda').
     max_node: int
         Max node in $r$ direction, $\phi$ direction, 
-        and $\lambda$ direction.
-    ratio: int
+        and $\lambda$ direction. In this program, 
+        the nodes in radial, latitude, and longitude direction 
+        take the same value.
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -2447,11 +2315,13 @@ def cal_latitude_band_gravitational_field(
         Evenly divide r_max into parts_num_r_max parts.
     parts_num_r_min: int
         Evenly divide r_min into parts_num_r_min parts.
+    r_max_std_lim: float
+        Limition of std(r_max). 
+    r_min_std_lim: float
+        Limition of std(r_max). 
     is_linear_density: bool
         If the tesseroid have linear varying density. 
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density.
-    
+        
     Returns
     -------
     result: numpy.ndarray, float
@@ -2465,7 +2335,7 @@ def cal_latitude_band_gravitational_field(
         lambda_min, lambda_max, \
         density, density_gradient, 
         shape, roots, weights, \
-        max_order_r_max, ratio, tag, parts_num_r_max, \
+        max_order_r_max, ratio, tag, parts_num_r_max, r_max_std_lim, \
         is_linear_density)
     
     r0 = np.copy(r_min)
@@ -2475,7 +2345,7 @@ def cal_latitude_band_gravitational_field(
         lambda_min, lambda_max, \
         density, density_gradient, 
         shape, roots, weights, \
-        max_order_r_min, ratio, tag, parts_num_r_min, \
+        max_order_r_min, ratio, tag, parts_num_r_min, r_min_std_lim, \
         is_linear_density)
     result = result_r_max - result_r_min
     return result
@@ -2495,11 +2365,11 @@ def is_input_format_correct(r_min, r_max, density, density_gradient,
     density: numpy.ndarray, float
         Density of tesseroid in kg/m^3.
     density_gradient: numpy.ndarray, float
-        Density gradient of tesseroid in kg/m^3/km.
+        Density gradient of tesseroid in kg/m^3/m.
     phi_count: int
-        Number of latitude.
+        Number of tesseroids in latitude direction.
     lambda_count: int
-        Number of longitude.
+        Number of tesseroids in longitude direction.
 
     Returns
     -------
@@ -2535,11 +2405,10 @@ def is_input_format_correct(r_min, r_max, density, density_gradient,
 
 
 def cal_gravitational_field(r_cal, phi_cal, lambda_cal, \
-        r_min, r_max, phi_min, phi_max, 
-        lambda_min, lambda_max, 
+        r_min, r_max, phi_min, phi_max, lambda_min, lambda_max, 
         density, density_gradient, max_order_r_max, max_order_r_min, 
-        max_node, ratio, tag, 
-        parts_num_r_max, parts_num_r_min,
+        max_node, ratio, tag, parts_num_r_max, parts_num_r_min,
+        r_max_std_lim, r_min_std_lim,
         is_linear_density=False, is_parallel_computing=True):
     """
     Calculate gravitational field of large-scale tesseroid.
@@ -2561,25 +2430,27 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal, \
     phi_max: float
         Max latitude of tesseroid in radian.
     phi_count: int
-        Number of latitude.
+        Number of tesseroids in latitude direction.
     lambda_min: float
         Min longitude of tesseroid in radian.
     lambda_max: float
         Max longitude of tesseroid in radian.
     lambda_count: int
-        Number of longitude.
+        Number of tesseroids in longitude direction.
     density: numpy.ndarray, float
         Density of tesseroid in kg/m^3.
     density_gradient: numpy.ndarray, float
-        Density gradient of tesseroid in kg/m^3.
+        Density gradient of tesseroid in kg/m^3/m.
     max_order_r_max: int
-        Truncation order of Taylor series of F(r_2, \varphi', \lambda')
-    max_order_r_min: int
         Truncation order of Taylor series of F(r_2, \varphi', \lambda').
+    max_order_r_min: int
+        Truncation order of Taylor series of F(r_1, \varphi', \lambda').
     max_node: int
         Max node in $r$ direction, $\phi$ direction, 
-        and $\lambda$ direction.
-    ratio: int
+        and $\lambda$ direction. In this program, 
+        the nodes in radial, latitude, and longitude direction 
+        take the same value.
+    ratio: float
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
@@ -2591,11 +2462,13 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal, \
         Evenly divide r_max into parts_num_r_max parts.
     parts_num_r_min: int
         Evenly divide r_min into parts_num_r_min parts.
+    r_max_std_lim: float
+        Limition of std(r_max). 
+    r_min_std_lim: float
+        Limition of std(r_max). 
     is_linear_density: bool
         If the tesseroid have linear varying density.
-        is_linear_density = true: tesseroid have linear varying density.
-        is_linear_density = false: tesseroid have constant density. 
-
+        
     Returns
     -------
     result: numpy.ndarray, float
@@ -2617,36 +2490,33 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal, \
         roots, weights = np.polynomial.legendre.leggauss(max_node)
         
         if is_parallel_computing:
-            print(mp.cpu_count())
             pool = mp.Pool(mp.cpu_count())
             
             results = pool.starmap(cal_latitude_band_gravitational_field, \
                 [(r_cal, phi_cal, lambda_cal, \
                 r_min[index_latitude, :], r_max[index_latitude, :], \
-                index_latitude * delta_phi + phi_min, index_latitude * delta_phi + phi_min + delta_phi, \
+                index_latitude * delta_phi + phi_min, 
+                index_latitude * delta_phi + phi_min + delta_phi, \
                 lambda_min, lambda_max_temp, apparent_density[index_latitude, :], \
                 density_gradient[index_latitude, :], density.shape, \
                 roots, weights, max_order_r_max, max_order_r_min, ratio, tag, \
-                parts_num_r_max, parts_num_r_min,
+                parts_num_r_max, parts_num_r_min, r_max_std_lim, r_min_std_lim,
                 is_linear_density) for index_latitude in range(phi_count)])
             pool.close()
-            # mdic = {"a": results}
-            # scipy.io.savemat("matlab_matrix_3_1.mat", mdic)
-            # with open('0418_1_1.pkl', 'wb') as f:  
-            #     pickle.dump(results, f)
+            
             for index in results:
                 result = result + index
         else:
             for index_latitude in range(phi_count):
-                # index_latitude = 5
                 result += cal_latitude_band_gravitational_field \
                     (r_cal, phi_cal, lambda_cal, \
                     r_min[index_latitude, :], r_max[index_latitude, :], 
-                    index_latitude * delta_phi + phi_min, index_latitude * delta_phi + phi_min + delta_phi, \
+                    index_latitude * delta_phi + phi_min, 
+                    index_latitude * delta_phi + phi_min + delta_phi, \
                     lambda_min, lambda_max_temp, apparent_density[index_latitude, :], \
                     density_gradient[index_latitude, :], density.shape, \
                     roots, weights, max_order_r_max, max_order_r_min, ratio, tag, \
-                    parts_num_r_max, parts_num_r_min,
+                    parts_num_r_max, parts_num_r_min, r_max_std_lim, r_min_std_lim,
                     is_linear_density) 
         return result
     else:
