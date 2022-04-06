@@ -333,44 +333,52 @@ def cal_Vy_kernel(r_cal, phi_cal, lambda_cal, \
     """
     a, b, c, d, e, f = r_tess, r_cal, phi_tess, phi_cal, lambda_tess, lambda_cal
     # Common part of taylor series.
-    temp6 = np.cos(c)
-    temp7 = np.cos(d)*np.cos(e - f)
-    temp1 = temp6 * temp7
-    temp2 = np.sin(c)*np.sin(d)
-    temp3 = temp1 + temp2
-    temp4 = a - b*(temp3)
-    a2 = a*a
-    a3 = a2 * a
-    a4 = a2 * a2
-    ell = a2 - 2*a*b*(temp3) + b*b
-    ell23 = (ell)**(3/2)
-    ell25 = ell * ell23
-    temp8 = np.sin(e - f)
-    temp62 = temp6*temp6
-    temp42 = temp4*temp4
-    temp44 = temp42*temp42
+    n = np.cos(phi_tess)
+    g = np.cos(phi_cal) * np.sin(phi_tess) - np.sin(phi_cal) * n\
+        * np.cos(lambda_tess - lambda_cal)
+    h = n * np.sin(lambda_tess - lambda_cal)
+    m = np.sin(phi_cal) * np.sin(phi_tess) + n * np.cos(phi_cal)\
+        * np.cos(lambda_tess - lambda_cal)
+    ell = (a**2 + b**2 - 2 * a * b * m)**0.5
+    tmp1 = 2 * a - 2 * b * m
 
     if is_linear_density:
-        if order==1:
-            kernel = a4*temp8*temp62/ell23
-        elif order==2:
-            kernel = a4*(-3*a + 3*b*temp3)*temp8*temp62/ell25 + 4*a3*temp8*temp62/ell23
-        elif order==3:
-            kernel = 3*a2*(a2*(5*temp42/(ell) - 1)/(ell) - 8*a*temp4/(ell) + 4)*temp8*temp62/ell23
-        elif order==4:
-            kernel = 3*a*(-5*a3*temp4*(7*temp42/(ell) - 3)/(ell)**2 + 12*a2*(5*temp42/(ell) - 1)/(ell) - 36*a*temp4/(ell) + 8)*temp8*temp62/ell23
-        elif order==5:
-            kernel = 3*(15*a4*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell)**2 - 80*a3*temp4*(7*temp42/(ell) - 3)/(ell)**2 + 72*a2*(5*temp42/(ell) - 1)/(ell) - 96*a*temp4/(ell) + 8)*temp8*temp62/ell23
-        elif order==6:
-            kernel = 45*(-7*a4*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell)**2 + 20*a3*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell) - 40*a2*temp4*(7*temp42/(ell) - 3)/(ell) + 16*a*(5*temp42/(ell) - 1) - 8*a + 8*b*temp3)*temp8*temp62/ell25
-        elif order==7:
-            kernel = 45*(7*a4*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell)**2 - 168*a3*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell)**2 + 180*a2*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell) - 160*a*temp4*(7*temp42/(ell) - 3)/(ell) + 120*temp42/(ell) - 24)*temp8*temp62/ell25
-        elif order==8:
-            kernel = 315*(-9*a4*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell)**2 + 28*a3*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell) - 252*a2*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell) + 120*a*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1) - 40*temp4*(7*temp42/(ell) - 3))*temp8*temp62/(ell)**(7/2)
-        elif order==9:
-            kernel = 945*(15*a4*(2431*temp4**8/(ell)**4 - 4004*temp4**6/(ell)**3 + 2002*temp44/(ell)**2 - 308*temp42/(ell) + 7)/(ell)**2 - 96*a3*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell)**2 + 112*a2*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell) - 448*a*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell) + 1680*temp44/(ell)**2 - 1120*temp42/(ell) + 80)*temp8*temp62/(ell)**(7/2)
-        elif order==10:
-            kernel = 2835*(-55*a4*temp4*(4199*temp4**8/(ell)**4 - 7956*temp4**6/(ell)**3 + 4914*temp44/(ell)**2 - 1092*temp42/(ell) + 63)/(ell)**2 + 180*a3*(2431*temp4**8/(ell)**4 - 4004*temp4**6/(ell)**3 + 2002*temp44/(ell)**2 - 308*temp42/(ell) + 7)/(ell) - 432*a2*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell) + 224*a*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5) - 336*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5))*temp8*temp62/(ell)**(9/2)
+        if order == 0:
+            if np.abs(m - 1) < 1e-15:
+                kernel = h * n * ( -1/2 * a * ( ( a + -1 * b ) )**( -2 ) * ( ( a )**( 3 ) + ( \
+                    4 * ( a )**( 2 ) * b + ( -18 * a * ( b )**( 2 ) + 12 * ( b )**( 3 ) ) \
+                    ) ) + -6 * ( b )**( 2 ) * np.log( ( -1 * a + b ) ) )
+            elif np.abs(m + 1) < 1e-15:
+                kernel = h * n * ( 1/2 * a * ( ( a + b ) )**( -2 ) * ( ( a )**( 3 ) + ( -4 * \
+                    ( a )**( 2 ) * b + ( -18 * a * ( b )**( 2 ) + -12 * ( b )**( 3 ) ) ) \
+                    ) + 6 * ( b )**( 2 ) * np.log( ( a + b ) ) )
+            else:
+                kernel = 1/2 * h * n * ( ell * ( ( -1 + ( m )**( 2 ) ) )**( -1 ) * ( ( a )**( 3 ) * \
+                    ( -1 + ( m )**( 2 ) ) + ( 5 * ( a )**( 2 ) * b * m * ( -1 + ( m )**( \
+                    2 ) ) + ( ( b )**( 3 ) * m * ( -13 + 15 * ( m )**( 2 ) ) + a * ( b \
+                    )**( 2 ) * ( -3 + ( 31 * ( m )**( 2 ) + -30 * ( m )**( 4 ) ) ) ) ) ) \
+                    + -3 * ( b )**( 2 ) * ( -1 + 5 * ( m )**( 2 ) ) * np.log( ( -1 * a \
+                    + ( b * m + ell ) ) ) )
+        elif order == 1:
+            kernel = ( a )**( 4 ) * h * ( ell )**( -3 ) * n
+        elif order == 2:
+            kernel = ( -3/2 * ( a )**( 4 ) * h * tmp1 * (ell)**(-5) * n + 4 * ( a )**( 3 ) * h * (ell)**(-3) * n )
+        elif order == 3:
+            kernel = ( -12 * ( a )**( 3 ) * h * tmp1 * (ell)**(-5) * n + ( 12 * ( a )**( 2 ) * h * (ell)**(-3) * n + ( a )**( 4 ) * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) )
+        elif order == 4:
+            kernel = ( -54 * ( a )**( 2 ) * h * tmp1 * (ell)**(-5) * n + ( 24 * a * h * (ell)**(-3) * n + ( ( a )**( 4 ) * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 12 * ( a )**( 3 ) * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) )
+        elif order == 5:
+            kernel = ( -144 * a * h * tmp1 * (ell)**(-5) * n + ( 24 * h * (ell)**(-3) * n + ( ( a )**( 4 ) * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + ( 16 * ( a )**( 3 ) * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 72 * ( a )**( 2 ) * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) ) )
+        elif order == 6:
+            kernel = ( -180 * h * tmp1 * (ell)**(-5) * n + ( ( a )**( 4 ) * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + ( 20 * ( a )**( 3 ) * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + ( 120 * ( a )**( 2 ) * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 240 * a * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) ) )
+        elif order == 7:
+            kernel = ( ( a )**( 4 ) * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + ( 24 * ( a )**( 3 ) * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + ( 180 * ( a )**( 2 ) * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + ( 480 * a * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 360 * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) ) )
+        elif order == 8:
+            kernel = ( ( a )**( 4 ) * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + ( 28 * ( a )**( 3 ) * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + ( 252 * ( a )**( 2 ) * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + ( 840 * a * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + 840 * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n ) ) ) )
+        elif order == 9:
+            kernel = ( ( a )**( 4 ) * h * ( 34459425/256 * ( tmp1 )**( 8 ) * (ell)**(-19) + ( -14189175/16 * ( tmp1 )**( 6 ) * (ell)**(-17) + ( 14189175/8 * ( tmp1 )**( 4 ) * (ell)**(-15) + ( -1091475 * ( tmp1 )**( 2 ) * (ell)**(-13) + 99225 * (ell)**(-11) ) ) ) ) * n + ( 32 * ( a )**( 3 ) * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + ( 336 * ( a )**( 2 ) * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + ( 1344 * a * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + 1680 * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n ) ) ) )
+        elif order == 10:
+            kernel = ( ( a )**( 4 ) * h * ( -654729075/512 * ( tmp1 )**( 9 ) * (ell)**(-21) + ( 310134825/32 * ( tmp1 )**( 7 ) * (ell)**(-19) + ( -383107725/16 * ( tmp1 )**( 5 ) * (ell)**(-17) + ( 42567525/2 * ( tmp1 )**( 3 ) * (ell)**(-15) + -9823275/2 * tmp1 * (ell)**(-13) ) ) ) ) * n + ( 36 * ( a )**( 3 ) * h * ( 34459425/256 * ( tmp1 )**( 8 ) * (ell)**(-19) + ( -14189175/16 * ( tmp1 )**( 6 ) * (ell)**(-17) + ( 14189175/8 * ( tmp1 )**( 4 ) * (ell)**(-15) + ( -1091475 * ( tmp1 )**( 2 ) * (ell)**(-13) + 99225 * (ell)**(-11) ) ) ) ) * n + ( 432 * ( a )**( 2 ) * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + ( 2016 * a * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + 3024 * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n ) ) ) )
         else:
             a, b, c, d, e, f = sy.symbols('a b c d e f')
             kernel = a**3 * sy.cos(c) \
@@ -381,26 +389,41 @@ def cal_Vy_kernel(r_cal, phi_cal, lambda_cal, \
             kernel = sy.N(d_kernel.subs({a: r_tess, b: r_cal, c: phi_tess, \
                 d: phi_cal, e: lambda_tess, f: lambda_cal}))
     else:
-        if order==1:    
-            kernel = a4*temp8*temp62/ell23
-        elif order==2:
-            kernel = a4*(-3*a + 3*b*temp3)*temp8*temp62/ell25 + 4*a3*temp8*temp62/ell23
-        elif order==3:
-            kernel = 3*a2*(a2*(5*temp42/(ell) - 1)/(ell) - 8*a*temp4/(ell) + 4)*temp8*temp62/ell23
-        elif order==4:
-            kernel = 3*a*(-5*a3*temp4*(7*temp42/(ell) - 3)/(ell)**2 + 12*a2*(5*temp42/(ell) - 1)/(ell) - 36*a*temp4/(ell) + 8)*temp8*temp62/ell23
-        elif order==5:
-            kernel = 3*(15*a4*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell)**2 - 80*a3*temp4*(7*temp42/(ell) - 3)/(ell)**2 + 72*a2*(5*temp42/(ell) - 1)/(ell) - 96*a*temp4/(ell) + 8)*temp8*temp62/ell23
-        elif order==6:
-            kernel = 45*(-7*a4*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell)**2 + 20*a3*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell) - 40*a2*temp4*(7*temp42/(ell) - 3)/(ell) + 16*a*(5*temp42/(ell) - 1) - 8*a + 8*b*temp3)*temp8*temp62/ell25
-        elif order==7:
-            kernel = 45*(7*a4*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell)**2 - 168*a3*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell)**2 + 180*a2*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1)/(ell) - 160*a*temp4*(7*temp42/(ell) - 3)/(ell) + 120*temp42/(ell) - 24)*temp8*temp62/ell25
-        elif order==8:
-            kernel = 315*(-9*a4*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell)**2 + 28*a3*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell) - 252*a2*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell) + 120*a*(21*temp44/(ell)**2 - 14*temp42/(ell) + 1) - 40*temp4*(7*temp42/(ell) - 3))*temp8*temp62/(ell)**(7/2)
-        elif order==9:
-            kernel = 945*(15*a4*(2431*temp4**8/(ell)**4 - 4004*temp4**6/(ell)**3 + 2002*temp44/(ell)**2 - 308*temp42/(ell) + 7)/(ell)**2 - 96*a3*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell)**2 + 112*a2*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5)/(ell) - 448*a*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5)/(ell) + 1680*temp44/(ell)**2 - 1120*temp42/(ell) + 80)*temp8*temp62/(ell)**(7/2)
-        elif order==10:
-            kernel = 2835*(-55*a4*temp4*(4199*temp4**8/(ell)**4 - 7956*temp4**6/(ell)**3 + 4914*temp44/(ell)**2 - 1092*temp42/(ell) + 63)/(ell)**2 + 180*a3*(2431*temp4**8/(ell)**4 - 4004*temp4**6/(ell)**3 + 2002*temp44/(ell)**2 - 308*temp42/(ell) + 7)/(ell) - 432*a2*temp4*(715*temp4**6/(ell)**3 - 1001*temp44/(ell)**2 + 385*temp42/(ell) - 35)/(ell) + 224*a*(429*temp4**6/(ell)**3 - 495*temp44/(ell)**2 + 135*temp42/(ell) - 5) - 336*temp4*(33*temp44/(ell)**2 - 30*temp42/(ell) + 5))*temp8*temp62/(ell)**(9/2)
+        if order == 0:
+            if np.abs(m - 1) < 1e-15:
+                kernel = h * n * ( -1 * a + ( 1/2 * ( 6 * a + -5 * b ) * ( ( a + -1 * b ) )**( \
+                    -2 ) * ( b )**( 2 ) + -3 * b * np.log( ( -1 * a + b ) ) ) )
+            elif np.abs(m + 1) < 1e-15:
+                kernel = h * n * ( a + ( -1/2 * ( b )**( 2 ) * ( ( a + b ) )**( -2 ) * ( 6 * \
+                    a + 5 * b ) + -3 * b * np.log( ( a + b ) ) ) )
+            else:
+                kernel = h * n * ( ( ( ( a )**( 2 ) + ( ( b )**( 2 ) + -2 * a * b * m ) ) \
+                    )**( -1/2 ) * ( ( -1 + ( m )**( 2 ) ) )**( -1 ) * ( a * b * m * ( 5 + \
+                    -6 * ( m )**( 2 ) ) + ( ( a )**( 2 ) * ( -1 + ( m )**( 2 ) ) + ( b \
+                    )**( 2 ) * ( -2 + 3 * ( m )**( 2 ) ) ) ) + -3 * b * m * np.log( ( \
+                    -1 * a + ( b * m + ( ( ( a )**( 2 ) + ( ( b )**( 2 ) + -2 * a * b * m \
+                    ) ) )**( 1/2 ) ) ) ) )
+        elif order==1:
+            kernel = ( a )**( 3 ) * h * ( ( ( a )**( 2 ) + ( ( b )**( 2 ) + -2 * a * b * m \
+                ) ) )**( -3/2 ) * n
+        elif order == 2:
+            kernel = ( -3/2 * ( a )**( 3 ) * h * tmp1 * (ell)**(-5) * n + 3 * ( a )**( 2 ) * h * (ell)**(-3) * n )
+        elif order == 3:
+            kernel = ( -9 * ( a )**( 2 ) * h * tmp1 * (ell)**(-5) * n + ( 6 * a * h * (ell)**(-3) * n + ( a )**( 3 ) * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) )
+        elif order == 4:
+            kernel = ( -27 * a * h * tmp1 * (ell)**(-5) * n + ( 6 * h * (ell)**(-3) * n + ( ( a )**( 3 ) * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 9 * ( a )**( 2 ) * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) )
+        elif order == 5:
+            kernel = ( -36 * h * tmp1 * (ell)**(-5) * n + ( ( a )**( 3 ) * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + ( 12 * ( a )**( 2 ) * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 36 * a * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) )
+        elif order == 6:
+            kernel = ( ( a )**( 3 ) * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + ( 15 * ( a )**( 2 ) * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + ( 60 * a * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n + 60 * h * ( 15/4 * ( tmp1 )**( 2 ) * (ell)**(-7) + -3 * (ell)**(-5) ) * n ) ) )
+        elif order == 7:
+            kernel = ( ( a )**( 3 ) * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + ( 18 * ( a )**( 2 ) * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + ( 90 * a * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n + 120 * h * ( -105/8 * ( tmp1 )**( 3 ) * (ell)**(-9) + 45/2 * tmp1 * (ell)**(-7) ) * n ) ) )
+        elif order == 8:
+            kernel = ( ( a )**( 3 ) * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + ( 21 * ( a )**( 2 ) * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + ( 126 * a * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n + 210 * h * ( 945/16 * ( tmp1 )**( 4 ) * (ell)**(-11) + ( -315/2 * ( tmp1 )**( 2 ) * (ell)**(-9) + 45 * (ell)**(-7) ) ) * n ) ) )
+        elif order == 9:
+            kernel = ( ( a )**( 3 ) * h * ( 34459425/256 * ( tmp1 )**( 8 ) * (ell)**(-19) + ( -14189175/16 * ( tmp1 )**( 6 ) * (ell)**(-17) + ( 14189175/8 * ( tmp1 )**( 4 ) * (ell)**(-15) + ( -1091475 * ( tmp1 )**( 2 ) * (ell)**(-13) + 99225 * (ell)**(-11) ) ) ) ) * n + ( 24 * ( a )**( 2 ) * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + ( 168 * a * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n + 336 * h * ( -10395/32 * ( tmp1 )**( 5 ) * (ell)**(-13) + ( 4725/4 * ( tmp1 )**( 3 ) * (ell)**(-11) + -1575/2 * tmp1 * (ell)**(-9) ) ) * n ) ) )
+        elif order == 10:
+            kernel = ( ( a )**( 3 ) * h * ( -654729075/512 * ( tmp1 )**( 9 ) * (ell)**(-21) + ( 310134825/32 * ( tmp1 )**( 7 ) * (ell)**(-19) + ( -383107725/16 * ( tmp1 )**( 5 ) * (ell)**(-17) + ( 42567525/2 * ( tmp1 )**( 3 ) * (ell)**(-15) + -9823275/2 * tmp1 * (ell)**(-13) ) ) ) ) * n + ( 27 * ( a )**( 2 ) * h * ( 34459425/256 * ( tmp1 )**( 8 ) * (ell)**(-19) + ( -14189175/16 * ( tmp1 )**( 6 ) * (ell)**(-17) + ( 14189175/8 * ( tmp1 )**( 4 ) * (ell)**(-15) + ( -1091475 * ( tmp1 )**( 2 ) * (ell)**(-13) + 99225 * (ell)**(-11) ) ) ) ) * n + ( 216 * a * h * ( -2027025/128 * ( tmp1 )**( 7 ) * (ell)**(-17) + ( 2837835/32 * ( tmp1 )**( 5 ) * (ell)**(-15) + ( -1091475/8 * ( tmp1 )**( 3 ) * (ell)**(-13) + 99225/2 * tmp1 * (ell)**(-11) ) ) ) * n + 504 * h * ( 135135/64 * ( tmp1 )**( 6 ) * (ell)**(-15) + ( -155925/16 * ( tmp1 )**( 4 ) * (ell)**(-13) + ( 42525/4 * ( tmp1 )**( 2 ) * (ell)**(-11) + -1575 * (ell)**(-9) ) ) ) * n ) ) )
         else:
             a, b, c, d, e, f = sy.symbols('a b c d e f')
             kernel = a**2 * sy.cos(c) \
