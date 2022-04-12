@@ -1795,21 +1795,19 @@ def double_data(data, lambda0, delta_lambda, shape, tag):
     """
     
     """
+    data2 = np.fliplr(data[:, 1:-1])
+    if tag in ['Vy', 'Vxy', 'Vyz']:
+        data2 = - data2
+    idx_lambda0 = int((lambda0 - (-np.pi + delta_lambda / 2)) / delta_lambda + 1e-10) + 1
     if lambda0 < 0:
-        data2 = np.fliplr(data[:, 1:])
-        if tag in ['Vy', 'Vxy', 'Vyz']:
-            data2 = - data2
         data2 = np.hstack((data2, data))
-        idx_lambda0 = int((lambda0 - (-180 + delta_lambda / 2)) / delta_lambda + 1e-10)
-        data3 = np.hstack((data2[:, shape[1]/2-idx_lambda0:], data2[:, 0:shape[1]/2-idx_lambda0]))
+        tmp_idx = int(shape[1]/2+1e-15)-idx_lambda0
+        data3 = np.hstack((data2[:, tmp_idx:], data2[:, :tmp_idx]))
         return data3
     else:
-        data2 = np.fliplr(data[:, :-2])
-        if tag in ['Vy', 'Vxy', 'Vyz']:
-            data2 = - data2
-        data2 = np.hstack((data2, data))
-        idx_lambda0 = int((lambda0 - (-180 + delta_lambda / 2)) / delta_lambda + 1e-10)
-        data3 = np.hstack((data2[:, shape[1]/2+shape[1]-idx_lambda0:], data2[:, 0:shape[1]/2+shape[1]-idx_lambda0]))
+        data2 = np.hstack((data, data2))
+        tmp_idx = int(shape[1]/2+1e-15)+shape[1]-idx_lambda0+1
+        data3 = np.hstack((data2[:, tmp_idx:], data2[:, :tmp_idx]))
         return data3
 
 
@@ -1867,11 +1865,11 @@ def cal_order(r_cal, phi_cal, lambda_cal,
     lambda0 = (lambda_max + lambda_min) / 2
     delta_lambda = lambda_max - lambda_min
     if is_linear_density:
-        data_constant = np.zeros(shape)
-        data_linear = np.zeros(shape)
+        data_constant = np.zeros((shape[0], int(shape[1]/2+1e-15)+1))
+        data_linear = np.zeros((shape[0], int(shape[1]/2+1e-15)+1))
 
         for index_latitude in range(shape[0]):
-            for index_longitude in range(shape[1]/2+1):
+            for index_longitude in range(int(shape[1]/2+1e-15)+1):
                 constant_temp, linear_temp \
                     = cal_single_tesseroid_gravitational_field \
                         (r_cal, phi_cal[index_latitude], lambda_cal[index_longitude], \
@@ -1884,10 +1882,10 @@ def cal_order(r_cal, phi_cal, lambda_cal,
         data_linear2 = double_data(data_linear, lambda0, delta_lambda, shape, tag)
         return data_constant2, data_linear2
     else:
-        data = np.zeros((shape[0], shape[1]/2+1))
+        data = np.zeros((shape[0], int(shape[1]/2+1e-15)+1))
 
         for index_latitude in range(shape[0]):
-            for index_longitude in range(shape[1]/2+1):
+            for index_longitude in range(int(shape[1]/2+1e-15)+1):
                 if lambda0 < 0:
                     tmp_lambda_cal = lambda0 + index_longitude * delta_lambda
                 else:
@@ -1899,6 +1897,90 @@ def cal_order(r_cal, phi_cal, lambda_cal,
                         roots, weights, order, tag, ratio, \
                         is_linear_density)
         return double_data(data, lambda0, delta_lambda, shape, tag)
+
+
+def cal_order2(r_cal, phi_cal, lambda_cal,
+    r0, r_max, phi_min, phi_max, lambda_min, lambda_max,
+    shape, roots, weights, order, ratio, 
+    tag, is_linear_density):
+    """
+    Calculate the order-differentiation of kernel function.
+
+    Parameters
+    ----------
+    r_cal: float
+        Radius of computation point in meter.
+    phi_cal: numpy.ndarray, float
+        Latitude of computation point in radian.
+    lambda_cal: numpy.ndarray, float
+        Longitude of computation point in radian.
+    r0: float
+        Expansion point of Taylor series in meter.
+    r_max: float
+        Radius of tesseroid in meter.
+    phi_min: float
+        Min latitude of tesseroid in radian.
+    phi_max: float
+        Max latitude of tesseroid in radian.
+    lambda_min: float
+        Min longitude of tesseroid in radian.
+    lambda_max: float
+        Max longitude of tesseroid in radian.
+    shape: tuple
+        Number of rows and columns of computation points.
+    roots: numpy.ndarray, float
+        Roots of legendre polynomial.
+    weights: numpy.ndarray, float
+        Weights of quadrature.
+    order: int
+        Differentiation of kernel function.
+    ratio: int
+        Distance-size ratio, which is specified by the user. 
+        The larger ratio is, the smaller tesseroid is divided, 
+        and the higher accuracy of calculation is.
+    tag: string
+        Kernel function to be calculated. 
+        tag \in {'V', 'Vx', 'Vy', 'Vz', 
+        'Vxx', 'Vxy', 'Vxz', 'Vyy', 'Vyz', 'Vzz'}
+    is_linear_density: bool
+        If the tesseroid have linear varying density. 
+        is_linear_density = true: tesseroid have linear varying density.
+        is_linear_density = false: tesseroid have constant density.
+
+    Returns
+    -------
+    data: numpy.ndarray, float
+        The order-differentiation of kernel function.
+    """
+    if is_linear_density:
+        data_constant = np.zeros(shape)
+        data_linear = np.zeros(shape)
+
+        for index_latitude in range(shape[0]):
+            for index_longitude in range(shape[1]):
+                constant_temp, linear_temp \
+                    = cal_single_tesseroid_gravitational_field \
+                        (r_cal, phi_cal[index_latitude], lambda_cal[index_longitude], \
+                        r0, r_max, phi_min, phi_max, lambda_min, lambda_max, \
+                        roots, weights, order, tag, ratio, \
+                        is_linear_density)
+                data_constant[index_latitude, index_longitude] = constant_temp
+                data_linear[index_latitude, index_longitude] = linear_temp
+
+        return data_constant, data_linear
+    else:
+        data = np.zeros(shape)
+
+        for index_latitude in range(shape[0]):
+            for index_longitude in range(shape[1]):
+                data[index_latitude, index_longitude] \
+                    = cal_single_tesseroid_gravitational_field \
+                        (r_cal, phi_cal[index_latitude], lambda_cal[index_longitude], \
+                        r0, r_max, phi_min, phi_max, lambda_min, lambda_max, \
+                        roots, weights, order, tag, ratio, \
+                        is_linear_density)
+
+        return data
 
 
 def shift_single_tesseroid(index_source, index_target, data, shape, tag):
