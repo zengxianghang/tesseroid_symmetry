@@ -1791,6 +1791,28 @@ def cal_single_tesseroid_gravitational_field(
         return result
 
 
+def double_data(data, lambda0, delta_lambda, shape, tag):
+    """
+    
+    """
+    if lambda0 < 0:
+        data2 = np.fliplr(data[:, 1:])
+        if tag in ['Vy', 'Vxy', 'Vyz']:
+            data2 = - data2
+        data2 = np.hstack((data2, data))
+        idx_lambda0 = int((lambda0 - (-180 + delta_lambda / 2)) / delta_lambda + 1e-10)
+        data3 = np.hstack((data2[:, shape[1]/2-idx_lambda0:], data2[:, 0:shape[1]/2-idx_lambda0]))
+        return data3
+    else:
+        data2 = np.fliplr(data[:, :-2])
+        if tag in ['Vy', 'Vxy', 'Vyz']:
+            data2 = - data2
+        data2 = np.hstack((data2, data))
+        idx_lambda0 = int((lambda0 - (-180 + delta_lambda / 2)) / delta_lambda + 1e-10)
+        data3 = np.hstack((data2[:, shape[1]/2+shape[1]-idx_lambda0:], data2[:, 0:shape[1]/2+shape[1]-idx_lambda0]))
+        return data3
+
+
 def cal_order(r_cal, phi_cal, lambda_cal,
     r0, r_max, phi_min, phi_max, lambda_min, lambda_max,
     shape, roots, weights, order, ratio, 
@@ -1842,12 +1864,14 @@ def cal_order(r_cal, phi_cal, lambda_cal,
     data: numpy.ndarray, float
         The order-differentiation of kernel function.
     """
+    lambda0 = (lambda_max + lambda_min) / 2
+    delta_lambda = lambda_max - lambda_min
     if is_linear_density:
         data_constant = np.zeros(shape)
         data_linear = np.zeros(shape)
 
         for index_latitude in range(shape[0]):
-            for index_longitude in range(shape[1]):
+            for index_longitude in range(shape[1]/2+1):
                 constant_temp, linear_temp \
                     = cal_single_tesseroid_gravitational_field \
                         (r_cal, phi_cal[index_latitude], lambda_cal[index_longitude], \
@@ -1856,21 +1880,25 @@ def cal_order(r_cal, phi_cal, lambda_cal,
                         is_linear_density)
                 data_constant[index_latitude, index_longitude] = constant_temp
                 data_linear[index_latitude, index_longitude] = linear_temp
-
-        return data_constant, data_linear
+        data_constant2 = double_data(data_constant, lambda0, delta_lambda, shape, tag)
+        data_linear2 = double_data(data_linear, lambda0, delta_lambda, shape, tag)
+        return data_constant2, data_linear2
     else:
-        data = np.zeros(shape)
+        data = np.zeros((shape[0], shape[1]/2+1))
 
         for index_latitude in range(shape[0]):
-            for index_longitude in range(shape[1]):
+            for index_longitude in range(shape[1]/2+1):
+                if lambda0 < 0:
+                    tmp_lambda_cal = lambda0 + index_longitude * delta_lambda
+                else:
+                    tmp_lambda_cal = lambda0 + index_longitude * delta_lambda - np.pi
                 data[index_latitude, index_longitude] \
                     = cal_single_tesseroid_gravitational_field \
-                        (r_cal, phi_cal[index_latitude], lambda_cal[index_longitude], \
+                        (r_cal, phi_cal[index_latitude], tmp_lambda_cal, \
                         r0, r_max, phi_min, phi_max, lambda_min, lambda_max, \
                         roots, weights, order, tag, ratio, \
                         is_linear_density)
-
-        return data
+        return double_data(data, lambda0, delta_lambda, shape, tag)
 
 
 def shift_single_tesseroid(index_source, index_target, data, shape, tag):
