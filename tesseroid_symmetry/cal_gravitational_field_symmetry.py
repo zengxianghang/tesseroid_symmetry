@@ -1180,14 +1180,14 @@ def cal_Vyz_kernel(r_cal, phi_cal, lambda_cal, \
         else:
             a, b, c, d, e, f = sy.symbols('a b c d e f')
             kernel = a**3 * sy.cos(c) \
-                * (3*(a*sy.cos(c)*sy.sin(e-f)) \
+                * (3*(a*(sy.cos(d)*sy.sin(c)-sy.sin(d)*sy.cos(c)*sy.cos(e-f))) \
                 * (a * (sy.sin(d) * sy.sin(c) + sy.cos(d) * sy.cos(c) * sy.cos(e - f)) - b)
                 / (sy.sqrt(a**2 + b**2 - 2 * a * b \
                 * (sy.sin(d) * sy.sin(c) + sy.cos(d) * sy.cos(c) * sy.cos(e - f))))**5)
             d_kernel = sy.diff(kernel, a, order-1)
             kernel = sy.N(d_kernel.subs({a: r_tess, b: r_cal, c: phi_tess, \
                 d: phi_cal, e: lambda_tess, f: lambda_cal}))
-    else:
+    else: 
         if order == 0:
             if np.abs(m - 1) < 1e-15:
                 kernel = 3 * g * n * ( 1/12 * ( ( a + -1 * b ) )**( -4 ) * b * ( ( b )**( 3 ) \
@@ -1195,10 +1195,10 @@ def cal_Vyz_kernel(r_cal, phi_cal, lambda_cal, \
                     a )**( 2 ) * b * ( -1 + 6 * m ) + 4 * a * ( b )**( 2 ) * ( -3 + 22 * \
                     m ) ) ) ) + -1 * m * np.log( ( a + -1 * b ) ) )
             elif np.abs(m + 1) < 1e-15:
-                kernel = 1/4 * ( ( a + b ) )**( -4 ) * g * n * ( 12 * ( a )**( 3 ) * b * ( 1 \
-                    + 4 * m ) + ( 4 * a * ( b )**( 3 ) * ( 3 + 22 * m ) + ( ( b )**( 4 ) \
-                    * ( 3 + 25 * m ) + ( 18 * ( a )**( 2 ) * b * ( b + 6 * b * m ) + 12 * \
-                    ( ( a + b ) )**( 4 ) * m * np.log( ( a + b ) ) ) ) ) )
+                kernel = 1/4 * ( ( a + b ) )**( -4 ) * g * n * ( 12 * ( a )**( 3 ) * b * ( 1 + \
+                    4 * m ) + ( 4 * a * ( b )**( 3 ) * ( 3 + 22 * m ) + ( ( b )**( 4 ) * \
+                    ( 3 + 25 * m ) + ( 18 * ( a )**( 2 ) * b * ( b + 6 * b * m ) + 12 * ( \
+                    ( a + b ) )**( 4 ) * m * np.log( ( a + b ) ) ) ) ) )
             else:
                 kernel = 3 * g * n * ( 1/3 * (ell)**(-3) * ( ( -1 + ( m )**( 2 ) ) )**( -1 ) * ( 3 * a * ( b )**( 2 ) * m * ( 3 + -4 * ( m )**( 2 ) ) + ( ( b )**( 3 ) * ( -2 + 3 * ( m )**( 2 ) ) + ( ( a )**( 3 ) * ( 7 * m + -8 * ( m )**( 3 ) ) + 3 * ( a )**( 2 ) * b * ( -1 + ( -2 * ( m )**( 2 ) + 4 * ( m )**( 4 ) ) ) ) ) ) + -1 * m * np.log( ( -1 * a + ( b * m + ( ( ( a )**( 2 ) + ( ( b )**( 2 ) + -2 * a * b * m ) ) )**( 1/2 ) ) ) ) )
         elif order == 1:
@@ -1224,7 +1224,7 @@ def cal_Vyz_kernel(r_cal, phi_cal, lambda_cal, \
         else:
             a, b, c, d, e, f = sy.symbols('a b c d e f')
             kernel = a**2 * sy.cos(c) \
-                * (3*(a*sy.cos(c)*sy.sin(e-f)) \
+                * (3*(a*(sy.cos(d)*sy.sin(c)-sy.sin(d)*sy.cos(c)*sy.cos(e-f))) \
                 * (a * (sy.sin(d) * sy.sin(c) + sy.cos(d) * sy.cos(c) * sy.cos(e - f)) - b)
                 / (sy.sqrt(a**2 + b**2 - 2 * a * b \
                 * (sy.sin(d) * sy.sin(c) + sy.cos(d) * sy.cos(c) * sy.cos(e - f))))**5)
