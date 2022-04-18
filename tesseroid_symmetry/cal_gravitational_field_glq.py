@@ -4,7 +4,7 @@ import matplotlib.pyplot
 import multiprocessing as mp
 import pickle
 
-from Tesseroid import Tesseroid
+from .Tesseroid import Tesseroid
 
 
 def cal_delta_x(phi_cal, lambda_cal, r_tess, phi_tess, lambda_tess):
@@ -194,7 +194,7 @@ def cal_Vx_kernel(r_cal, phi_cal, lambda_cal, \
     ell = cal_distance(r_cal, phi_cal, lambda_cal,
         r_tess, phi_tess, lambda_tess)
     delta_x = cal_delta_x(phi_cal, lambda_cal, r_tess, phi_tess, lambda_tess)
-    kernel = delta_x / ell * r_tess**2 * math.cos(phi_tess)  
+    kernel = delta_x / ell**3 * r_tess**2 * math.cos(phi_tess)  
     if is_linear_density:
         kernel *= r_tess
 
@@ -924,7 +924,9 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal,
         Density gradient of tesseroid in kg/m^3/m.
     max_node: int
         Max node in $r$ direction, $\phi$ direction, 
-        and $\lambda$ direction.
+        and $\lambda$ direction. In this program, 
+        the nodes in radial, latitude, and longitude direction 
+        take the same value.
     ratio: int
         Distance-size ratio, which is specified by the user. 
         The larger ratio is, the smaller tesseroid is divided, 
