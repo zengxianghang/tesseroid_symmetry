@@ -8,4 +8,4 @@ class Tesseroid:
         self.lambda_min = lambda_min
         self.lambda_max = lambda_max
         self.apparent_density = apparent_density
-        self.denisty_gradient = density_gradient
+        self.density_gradient = density_gradient
