@@ -1,8 +1,6 @@
 import math
 import numpy as np
-import matplotlib.pyplot 
 import multiprocessing as mp
-import pickle
 
 from .Tesseroid import Tesseroid
 
@@ -123,7 +121,7 @@ def cal_distance(r1, phi1, lambda1, r2, phi2, lambda2):
     cosPsi = math.sin(phi1) * math.sin(phi2) \
         + math.cos(phi1) * math.cos(phi2) \
         * math.cos(lambda1 - lambda2)
-    distance = math.sqrt(r1**2 + r2**2 - 2 * r1 * r2 * cosPsi)
+    distance = (r1**2 + r2**2 - 2 * r1 * r2 * cosPsi)**0.5
 
     return distance
 
@@ -652,7 +650,7 @@ def subdivision(r_cal, phi_cal, lambda_cal,
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
     density or density_gradient: float
-        Density of tesseroid, unit: kg/m^3.
+        Apperent density of tesseroid, unit: kg/m^3.
         Density gradient of tesseroid, unit: kg/m^3/m.
     
     Returns
@@ -719,7 +717,7 @@ def direct_cal_gravitational_field(r_cal, phi_cal, lambda_cal,
         The larger ratio is, the smaller tesseroid is divided, 
         and the higher accuracy of calculation is.
     density or density_gradient: float
-        Density of tesseroid, unit: kg/m^3.
+        Apperent density of tesseroid, unit: kg/m^3.
         Density gradient of tesseroid, unit: kg/m^3/m.
     max_node: int
         Max node in $r$ direction, $\phi$ direction, 
@@ -741,18 +739,18 @@ def direct_cal_gravitational_field(r_cal, phi_cal, lambda_cal,
     result = 0
     roots, weights = np.polynomial.legendre.leggauss(max_node)
     
+    r_tess = (roots * (r_max - r_min) + r_max + r_min) / 2
+    phi_tess = (roots * (phi_max - phi_min) + phi_max + phi_min) / 2
+    lambda_tess = (roots * (lambda_max - lambda_min) + lambda_max + lambda_min) / 2
+
     for index_r in range(max_node):
         for index_phi in range(max_node):
+            tmp = weights[index_r] * weights[index_phi]
             for index_lambda in range(max_node):
-                r_tess_temp = (roots[index_r] * (r_max - r_min) \
-                    + r_max + r_min) / 2
-                phi_tess_temp = (roots[index_phi] * (phi_max - phi_min) \
-                    + phi_max + phi_min) / 2
-                lambda_tess_temp = (roots[index_lambda] \
-                    * (lambda_max - lambda_min) + lambda_max + lambda_min) / 2
                 result += cal_kernel(r_cal, phi_cal, lambda_cal, \
-                    r_tess_temp, phi_tess_temp, lambda_tess_temp, tag, is_linear_density) \
-                    * weights[index_r] * weights[index_phi] * weights[index_lambda]
+                    r_tess[index_r], phi_tess[index_phi], lambda_tess[index_lambda], \
+                    tag, is_linear_density) \
+                    * tmp * weights[index_lambda]
     
     G =6.67384e-11
     result *= G * (r_max - r_min) * (phi_max - phi_min) \
@@ -790,7 +788,7 @@ def cal_single2single_gravitational_field(r_cal, phi_cal, lambda_cal,
     lambda_max: float
         Max longitude of tesseroid in radian.   
     density: float
-        Density of tesseroid, unit: kg/m^3.
+        Apperent density of tesseroid, unit: kg/m^3.
     density_gradient: float
         Density gradient of tesseroid, unit: kg/m^3/m.
     max_node: int
@@ -856,7 +854,10 @@ def cal_single_tess_gravitational_field(r_cal, phi_cal, lambda_cal,
     lambda_max: float
         Max longitude of tesseroid in radian.   
     density: float
-        Density of tesseroid, unit: kg/m^3.
+        Apperent density of tesseroid, unit: kg/m^3.
+        The meaning of apparent density can be found at Eq(8) of 
+        ‘On the computation of gravitational effects for tesseroids with constant and linearly varying density’ 
+        by Lin Miao and Heiner Denker, Journal of Geodesy (2019) 93:723–747, https://doi.org/10.1007/s00190-018-1193-4
     density_gradient: float
         Density gradient of tesseroid, unit: kg/m^3/m.
     max_node: int
@@ -924,7 +925,7 @@ def cal_gravitational_field(r_cal, phi_cal, lambda_cal,
     lambda_max: float
         Longitude of tesseroid in radian.
     density: numpy.ndarray, float
-        Density of tesseroid in kg/m^3.
+        Bottom density of tesseroid in kg/m^3.
     density_gradient: numpy.ndarray, float
         Density gradient of tesseroid in kg/m^3/m.
     max_node: int
