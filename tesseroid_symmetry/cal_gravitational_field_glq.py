@@ -229,7 +229,7 @@ def cal_Vy_kernel(r_cal, phi_cal, lambda_cal, \
     ell = cal_distance(r_cal, phi_cal, lambda_cal,
         r_tess, phi_tess, lambda_tess)
     delta_y = cal_delta_y(lambda_cal, r_tess, phi_tess, lambda_tess)
-    kernel = delta_y / ell * r_tess**2 * math.cos(phi_tess)
+    kernel = delta_y / ell**3 * r_tess**2 * math.cos(phi_tess)
     if is_linear_density:
         kernel *= r_tess
     
@@ -837,7 +837,7 @@ def cal_single2single_gravitational_field(r_cal, phi_cal, lambda_cal,
                 [(r_cal, phi_cal, lambda_cal, 
                     tess.r_min, tess.r_max, tess.phi_min, tess.phi_max, \
                     tess.lambda_min, tess.lambda_max, 
-                    tess.apparent_density, max_node, tag, True)
+                    tess.density_gradient, max_node, tag, True)
                 for tess in subdivided_tess])
             pool.close()
             for res in results_linear:
